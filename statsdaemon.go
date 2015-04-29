@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/lexh/stats-dynamics"
 	"github.com/tv42/topic"
 	"github.com/vimeo/statsdaemon/common"
 	"github.com/vimeo/statsdaemon/counters"
@@ -184,6 +185,9 @@ func submit(c *counters.Counters, g *gauges.Gauges, t *timers.Timers, deadline t
 	instrument(c, &buffer, now, "counter")
 	instrument(g, &buffer, now, "gauge")
 	instrument(t, &buffer, now, "timer")
+
+	// Try and send this set of stats to app dynamics
+	stats_dynamics.Submit(buffer)
 
 	if *debug {
 		for _, line := range bytes.Split(buffer.Bytes(), []byte("\n")) {
